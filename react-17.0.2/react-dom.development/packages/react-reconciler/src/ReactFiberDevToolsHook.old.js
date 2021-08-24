@@ -40,8 +40,10 @@
 
     return true;
   }
+  // 调度root = container
   function onScheduleRoot(root, children) {
     {
+      // onScheduleFiberRoot 暴露出的给外部用的hook 可以用于开发工具等 可以用于监听根节点的调度判断
       if (injectedHook && typeof injectedHook.onScheduleFiberRoot === 'function') {
         try {
           injectedHook.onScheduleFiberRoot(rendererID, root, children);

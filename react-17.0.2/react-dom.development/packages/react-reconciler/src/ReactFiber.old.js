@@ -316,6 +316,7 @@
       mode |= ProfileMode;
     }
 
+    // HostRoot = 3
     return createFiber(HostRoot, null, null, mode);
   }
   function createFiberFromTypeAndProps(type, // React$ElementType

@@ -11,6 +11,7 @@
     return _enabled;
   }
   function createEventListenerWrapperWithPriority(targetContainer, domEventName, eventSystemFlags) {
+    // 获取事件所属类型 离散 连续 用户阻塞事件
     var eventPriority = getEventPriorityForPluginSystem(domEventName);
     var listenerWrapper;
 
@@ -32,6 +33,7 @@
     return listenerWrapper.bind(null, domEventName, eventSystemFlags, targetContainer);
   }
 
+  // 离散事件分发
   function dispatchDiscreteEvent(domEventName, eventSystemFlags, container, nativeEvent) {
     {
       flushDiscreteUpdatesIfNeeded(nativeEvent.timeStamp);
@@ -40,12 +42,14 @@
     discreteUpdates(dispatchEvent, domEventName, eventSystemFlags, container, nativeEvent);
   }
 
+  // 用户阻塞事件分发
   function dispatchUserBlockingUpdate(domEventName, eventSystemFlags, container, nativeEvent) {
     {
       runWithPriority(UserBlockingPriority$1, dispatchEvent.bind(null, domEventName, eventSystemFlags, container, nativeEvent));
     }
   }
 
+  // 普通事件分发
   function dispatchEvent(domEventName, eventSystemFlags, targetContainer, nativeEvent) {
     if (!_enabled) {
       return;

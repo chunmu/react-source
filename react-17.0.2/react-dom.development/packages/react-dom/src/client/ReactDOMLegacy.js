@@ -134,7 +134,6 @@
         };
       } // Update
 
-
       updateContainer(children, fiberRoot, parentComponent, callback);
     }
 
@@ -244,6 +243,7 @@
       } // Unmount should not be batched.
 
 
+      // 从根节点开始出发第一次渲染更新
       unbatchedUpdates(function () {
         legacyRenderSubtreeIntoContainer(null, null, container, false, function () {
           // $FlowFixMe This should probably use `delete container._reactRootContainer`

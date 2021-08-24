@@ -145,6 +145,7 @@
     node[internalPropsKey] = props;
   }
   function getEventListenerSet(node) {
+    // internalEventHandlersKey = '__reactEvents$' + randomKey;
     var elementListenerSet = node[internalEventHandlersKey];
 
     if (elementListenerSet === undefined) {

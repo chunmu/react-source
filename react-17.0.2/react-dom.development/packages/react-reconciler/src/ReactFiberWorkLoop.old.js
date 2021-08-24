@@ -734,6 +734,7 @@
   function getExecutionContext() {
     return executionContext;
   }
+  // flush react事件
   function flushDiscreteUpdates() {
     // TODO: Should be able to flush inside batchedUpdates, but not inside `act`.
     // However, `act` uses `batchedUpdates`, so there's no way to distinguish
@@ -824,6 +825,7 @@
       }
     }
   }
+  // 非批量更新
   function unbatchedUpdates(fn, a) {
     var prevExecutionContext = executionContext;
     executionContext &= ~BatchedContext;

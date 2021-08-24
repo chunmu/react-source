@@ -85,12 +85,14 @@
   function createContainer(containerInfo, tag, hydrate, hydrationCallbacks) {
     return createFiberRoot(containerInfo, tag, hydrate);
   }
+  // 容器级别的更新 container root-app
   function updateContainer(element, container, parentComponent, callback) {
     {
+      // 处理外部监听根fiber调度的钩子 暴露部分信息
       onScheduleRoot(container, element);
     }
 
-    var current$1 = container.current;
+    var current$1 = container.current; // 指向fiber
     var eventTime = requestEventTime();
 
     {

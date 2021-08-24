@@ -38,12 +38,17 @@
     // result in far fewer object allocations and property accesses
     // if we only use three arrays to process all the categories of
     // instead of tuples.
+    // i+= 2 ['click', 'click'] ['contextmenu', 'contextMemu']
     for (var i = 0; i < eventTypes.length; i += 2) {
-      var topEvent = eventTypes[i];
-      var event = eventTypes[i + 1];
+      var topEvent = eventTypes[i]; // 'click'
+      var event = eventTypes[i + 1]; // 'click'
+      // 组装react合成事件 cick => Click
       var capitalizedEvent = event[0].toUpperCase() + event.slice(1);
+      // onClick
       var reactName = 'on' + capitalizedEvent;
+      // {click: DiscreteEvent = 0}
       eventPriorities.set(topEvent, priority);
+      // {click: onClick}
       topLevelEventsToReactNames.set(topEvent, reactName);
       registerTwoPhaseEvent(reactName, [topEvent]);
     }
@@ -63,8 +68,15 @@
     return priority === undefined ? ContinuousEvent : priority;
   }
   function registerSimpleEvents() {
+    // DiscreteEvent = 0 离散事件
+    // discreteEventPairsForSimpleEventPlugin = ['click', 'copy'...]
     registerSimplePluginEventsAndSetTheirPriorities(discreteEventPairsForSimpleEventPlugin, DiscreteEvent);
+    // userBlockingPairsForSimpleEventPlugin = ['drag'...]
+    // UserBlockingEvent = 1
     registerSimplePluginEventsAndSetTheirPriorities(userBlockingPairsForSimpleEventPlugin, UserBlockingEvent);
+    // continuousPairsForSimpleEventPlugin = ['abort'...]
+    // ContinuousEvent = 2
     registerSimplePluginEventsAndSetTheirPriorities(continuousPairsForSimpleEventPlugin, ContinuousEvent);
+    // 其它零散的事件
     setEventPriorities(otherDiscreteEvents, DiscreteEvent);
   }

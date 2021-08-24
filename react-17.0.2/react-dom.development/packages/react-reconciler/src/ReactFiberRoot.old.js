@@ -58,8 +58,19 @@
 
 
     var uninitializedFiber = createHostRootFiber(tag);
-    root.current = uninitializedFiber;
-    uninitializedFiber.stateNode = root;
+    root.current = uninitializedFiber; // current指向另一个fiber
+    uninitializedFiber.stateNode = root; // stateNode回头指向正在工作的fiber
     initializeUpdateQueue(uninitializedFiber);
+    // 初始化的内容
+    // var queue = {
+    //   baseState: fiber.memoizedState,
+    //   firstBaseUpdate: null,
+    //   lastBaseUpdate: null,
+    //   shared: {
+    //     pending: null
+    //   },
+    //   effects: null
+    // };
+    // fiber.updateQueue = queue;
     return root;
   }

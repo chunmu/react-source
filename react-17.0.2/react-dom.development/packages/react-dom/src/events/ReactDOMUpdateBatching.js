@@ -82,7 +82,9 @@
   }
   function flushDiscreteUpdatesIfNeeded(timeStamp) {
     {
+      // 开关 如果不是出于批量分发 则立即发起单独分发
       if (!isInsideEventHandler) {
+        // _flushDiscreteUpdatesImpl
         flushDiscreteUpdatesImpl();
       }
     }

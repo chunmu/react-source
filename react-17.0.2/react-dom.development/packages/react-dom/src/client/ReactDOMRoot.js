@@ -53,10 +53,11 @@
     var mutableSources = options != null && options.hydrationOptions != null && options.hydrationOptions.mutableSources || null;
     // 创建根fiber
     var root = createContainer(container, tag, hydrate);
-    markContainerAsRoot(root.current, container);
+    markContainerAsRoot(root.current, container); // 标记根节点
     var containerNodeType = container.nodeType;
 
     {
+      // COMMENT_NODE = 8
       var rootContainerElement = container.nodeType === COMMENT_NODE ? container.parentNode : container;
       listenToAllSupportedEvents(rootContainerElement);
     }

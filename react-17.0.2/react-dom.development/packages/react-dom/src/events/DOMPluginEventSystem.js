@@ -1,9 +1,13 @@
   // TODO: remove top-level side effect.
-  registerSimpleEvents();
-  registerEvents$2();
-  registerEvents$1();
-  registerEvents$3();
-  registerEvents();
+  registerSimpleEvents(); // 注册事件 click等离散事件
+  registerEvents$2(); // mouseEnter mouseout mouseOver onPointerEnter onPointerLeave
+  registerEvents$1(); // 'onChange', ['change', 'click', 'focusin', 'focusout', 'input', 'keydown', 'keyup', 'selectionchange']
+  registerEvents$3(); // 'onSelect', ['focusout', 'contextmenu', 'dragend', 'focusin', 'keydown', 'keyup', 'mousedown', 'mouseup', 'selectionchange']
+  registerEvents(); // 
+  // registerTwoPhaseEvent('onBeforeInput', ['compositionend', 'keypress', 'textInput', 'paste']);
+  // registerTwoPhaseEvent('onCompositionEnd', ['compositionend', 'focusout', 'keydown', 'keypress', 'keyup', 'mousedown']);
+  // registerTwoPhaseEvent('onCompositionStart', ['compositionstart', 'focusout', 'keydown', 'keypress', 'keyup', 'mousedown']);
+  // registerTwoPhaseEvent('onCompositionUpdate', ['compositionupdate', 'focusout', 'keydown', 'keypress', 'keyup', 'mousedown']);
 
   function extractEvents$5(dispatchQueue, domEventName, targetInst, nativeEvent, nativeEventTarget, eventSystemFlags, targetContainer) {
     // TODO: we should remove the concept of a "SimpleEventPlugin".
@@ -130,9 +134,11 @@
       }
 
       rootContainerElement[listeningMarker] = true;
+      // 这边前置工作已经放好了allNativeEvents
       allNativeEvents.forEach(function (domEventName) {
+        // 有的事件可以委托 提高性能  有的事件不能委托 触发频率过高 委托性能更差
         if (!nonDelegatedEvents.has(domEventName)) {
-          listenToNativeEvent(domEventName, false, rootContainerElement, null);
+          listenToNativeEvent(domEventName, false /* 是否能冒泡的事件*/, rootContainerElement, null);
         }
 
         listenToNativeEvent(domEventName, true, rootContainerElement, null);
@@ -145,6 +151,9 @@
     // otherwise it won't capture incoming events that are only
     // triggered on the document directly.
 
+    // ownerDocument根节点
+    // selectionchange需要特殊处理 文本选中 只能代理在Document
+    // DOCUMENT_NODE = 9
     if (domEventName === 'selectionchange' && rootContainerElement.nodeType !== DOCUMENT_NODE) {
       target = rootContainerElement.ownerDocument;
     } // If the event can be delegated (or is capture phase), we can
@@ -167,11 +176,19 @@
         return;
       }
 
+      // var IS_EVENT_HANDLE_NON_MANAGED_NODE = 1;
+      // var IS_NON_DELEGATED = 1 << 1;
+      // var IS_CAPTURE_PHASE = 1 << 2;
+      // var IS_REPLAYED = 1 << 4;
       eventSystemFlags |= IS_NON_DELEGATED;
       target = targetElement;
     }
 
+    // target有可能是root container  也就是root-app
+    // 对于只能代理到根节点的   就放到document节点处理
     var listenerSet = getEventListenerSet(target);
+    // domEventName + "__" + (capture ? 'capture' : 'bubble');
+    // click__capture
     var listenerSetKey = getListenerSetKey(domEventName, isCapturePhaseListener); // If the listener entry is empty or we should upgrade, then
     // we need to trap an event listener onto the target.
 
@@ -186,6 +203,7 @@
   }
 
   function addTrappedEventListener(targetContainer, domEventName, eventSystemFlags, isCapturePhaseListener, isDeferredListenerForLegacyFBSupport) {
+    // 一个方法 监听事件且执行分发的方法
     var listener = createEventListenerWrapperWithPriority(targetContainer, domEventName, eventSystemFlags); // If passive option is not supported, then the event will be
     // active and not passive.
 
@@ -198,6 +216,7 @@
       // the performance wins from the change. So we emulate
       // the existing behavior manually on the roots now.
       // https://github.com/facebook/react/issues/19651
+      // 是不是需要passive 提前知道不会冒泡的事件 没有后续用户额外逻辑的事件
       if (domEventName === 'touchstart' || domEventName === 'touchmove' || domEventName === 'wheel') {
         isPassiveListener = true;
       }
@@ -207,6 +226,7 @@
     var unsubscribeListener; // When legacyFBSupport is enabled, it's for when we
 
 
+    // 冒泡阶段 铺货阶段等组合 事件代理设置
     if (isCapturePhaseListener) {
       if (isPassiveListener !== undefined) {
         unsubscribeListener = addEventCaptureListenerWithPassiveFlag(targetContainer, domEventName, listener, isPassiveListener);
